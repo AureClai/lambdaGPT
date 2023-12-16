@@ -1,0 +1,81 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Adjust as per your design requirements */
+  max-width: 800px; /* Example max-width */
+  height: 100%;
+  margin: auto;
+}
+
+/* Add this to keep the InputBar at the bottom */
+.input-bar-container {
+  position: fixed;
+  bottom: 0; /* Stick to the bottom */
+  left: 0; /* Align to the left */
+}
+
+/* Customize the scrollbar itself (the whole track) */
+::-webkit-scrollbar {
+  width: 8px; /* Adjust the width of the scrollbar */
+  height: 8px; /* Adjust the height of the scrollbar (for horizontal scrollbars) */
+}
+
+/* Customize the background of the scrollbar track */
+::-webkit-scrollbar-track {
+  opacity: 0;
+}
+
+/* Customize the scrollbar handle */
+::-webkit-scrollbar-thumb {
+  background: #ddd; /* Background color of the scrollbar handle */
+  border-radius: 5px; /* Roundness of the scrollbar handle */
+}
+
+/* Handle on hover and active states */
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa; /* Background color of the scrollbar handle on hover */
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #333; /* Background color of the scrollbar handle when clicked on */
+}
+
+.info {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+
+.info-panel {
+  position: absolute;
+  right: 10px;
+  bottom: 45px;
+  width: 300px;
+}
+
+a {
+  color: #555; /* Replace with your primary color */
+  text-decoration: none; /* Remove underline */
+}
+
+.info-panel {
+  visibility: hidden; /* Initially hidden */
+  opacity: 0;
+  transition: visibility 0s, opacity 0.3s linear; /* Adjust timing as needed */
+}
+
+.info-panel.show {
+  visibility: visible;
+  opacity: 1;
+}
