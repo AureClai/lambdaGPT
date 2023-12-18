@@ -1,0 +1,20 @@
+.message-tool {
+    color: #ccc;
+    transform: scale(0.8);
+    cursor: pointer;
+}
+
+/* Keyframes for color animation */
+@keyframes colorChange {
+    from {
+        color: #ccc; /* Starting color */
+    }
+    to {
+        color: black; /* Ending color */
+    }
+}
+
+.message-tool:hover {
+    color: black;
+    animation: colorChange 0.3s linear;
+}

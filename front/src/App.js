@@ -25,6 +25,7 @@ import useOutsideClick from "./Hooks/useOutsideClick";
 
 import logo from "./assets/lambda_logo.png";
 
+
 const examples = {
   1: {
     main: "Tell me a fun fact",
@@ -50,6 +51,7 @@ function App() {
   const [chatWriting, setChatWriting] = useState(false);
   const [messages, setMessages] = useState([]);
   const [infoDisplay, setInfoDisplay] = useState(false);
+  const [numberOfmessages, setnumerOfmessages] = useState(0);
 
   const infoPanelRef = useRef(null);
 
@@ -81,8 +83,16 @@ function App() {
   }, [chatWriting, response]);
 
   const generate = () => {
+    // History use
+    const history = messages
+      .map((message) =>
+        message.author === "user"
+          ? `<>User:${message.text}`
+          : `<>Lambda:${message.text}`
+      )
+      .join("");
     const data = {
-      prompt: `>%User: ${currPrompt} >%Lambda: ${response}`,
+      prompt: `${history}<>User: ${currPrompt}<>Lambda: ${response}`,
     };
     axios
       .post("http://localhost:5000/generate", data)
@@ -97,8 +107,10 @@ function App() {
               {
                 author: "lambda",
                 text: response + _apiResponse.data.response.choices[0].text,
+                id: numberOfmessages,
               },
             ]);
+            setnumerOfmessages(numberOfmessages + 1);
           }
         }
       })
@@ -113,7 +125,11 @@ function App() {
       setChatWriting(true);
       setCurrPrompt(value);
       setResponse("");
-      setMessages([...messages, { author: "user", text: value }]);
+      setMessages([
+        ...messages,
+        { author: "user", text: value, id: numberOfmessages },
+      ]);
+      setnumerOfmessages(numberOfmessages + 1);
     }
   };
 
@@ -125,8 +141,44 @@ function App() {
         {
           author: "lambda",
           text: response,
+          id: numberOfmessages,
         },
       ]);
+      setnumerOfmessages(numberOfmessages + 1);
+    }
+  };
+
+  const onMessageEditClick = (id, text) => {
+    if (!chatWriting) {
+      const _messages = messages.filter((message) => {
+        return message.id <= id - 1;
+      });
+
+      setChatWriting(true);
+      setCurrPrompt(text);
+      setResponse("");
+      setMessages([..._messages, { author: "user", text: text, id: id }]);
+      setnumerOfmessages(id + 1);
+    }
+  };
+
+  const onMessageReloadClick = (id) => {
+    const _messages = messages.filter((message) => {
+      return message.id < id - 1;
+    });
+    const lastPrompt = messages.find((message) => {
+      return message.id === id - 1;
+    }).text;
+    setnumerOfmessages(id - 1);
+    if (true) {
+      setChatWriting(true);
+      setCurrPrompt(lastPrompt);
+      setResponse("");
+      setMessages([
+        ..._messages,
+        { author: "user", text: lastPrompt, id: id - 1 },
+      ]);
+      setnumerOfmessages(id);
     }
   };
 
@@ -185,7 +237,11 @@ function App() {
                 <Grid
                   container
                   spacing={2}
-                  sx={{ width: "100%", marginTop: "auto", marginBottom: "10px" }}
+                  sx={{
+                    width: "100%",
+                    marginTop: "auto",
+                    marginBottom: "10px",
+                  }}
                 >
                   {" "}
                   {/* Grid container */}
@@ -193,26 +249,32 @@ function App() {
                     <Grid item xs={6} key={item}>
                       {" "}
                       {/* Grid items */}
-                      <div style={{cursor:"pointer"}} onClick={(_) => {onClickEnvoyer(examples[item].main + " " + examples[item].second)}}>
-                      <Paper
-                        sx={{
-                          height: 50,
-                          display: "flex",
-                          justifyContent: "left",
-                          alignItems: "center",
-                          padding : 1,
-                          backgroundColor: "#eee",
-                          borderRadius: 2
+                      <div
+                        style={{ cursor: "pointer" }}
+                        onClick={(_) => {
+                          onClickEnvoyer(
+                            examples[item].main + " " + examples[item].second
+                          );
                         }}
-                        elevation={3}
                       >
-                        <Stack direction="column">
-                          <Typography>{examples[item].main}</Typography>
-                          <Typography>{examples[item].second}</Typography>
-                        </Stack>
-                      </Paper>
+                        <Paper
+                          sx={{
+                            height: 50,
+                            display: "flex",
+                            justifyContent: "left",
+                            alignItems: "center",
+                            padding: 1,
+                            backgroundColor: "#eee",
+                            borderRadius: 2,
+                          }}
+                          elevation={3}
+                        >
+                          <Stack direction="column">
+                            <Typography>{examples[item].main}</Typography>
+                            <Typography>{examples[item].second}</Typography>
+                          </Stack>
+                        </Paper>
                       </div>
-                      
                     </Grid>
                   ))}
                 </Grid>
@@ -220,10 +282,20 @@ function App() {
             ) : (
               [
                 ...messages.map((message) => {
-                  return <Message message={message} />;
+                  return (
+                    <Message
+                      key={`message${message.id}`}
+                      message={message}
+                      onValidEditClick={onMessageEditClick}
+                      onReloadClick={onMessageReloadClick}
+                    />
+                  );
                 }),
                 chatWriting ? (
-                  <Message message={{ author: "lambda", text: response }} />
+                  <Message
+                    key={`message-curr`}
+                    message={{ author: "lambda", text: response }}
+                  />
                 ) : null,
               ]
             )}

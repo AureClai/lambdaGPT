@@ -1,5 +1,5 @@
 # Download the model
-Invoke-WebRequest -Uri "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf" -OutFile "./api/llama-2-7b-chat.Q5_K_M.gguf"
+Invoke-WebRequest -Uri "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.Q5_K_M.gguf" -OutFile "./api/models/llama-2-7b-chat.Q5_K_M.gguf"
 
 
 # Create a new Conda environment named LambdaGPT with Python 3.11
